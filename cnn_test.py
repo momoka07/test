@@ -1,3 +1,4 @@
+# https://qiita.com/Ka-k/items/ce253b408d7fb6f6b06f 
 import numpy as np
 from keras.datasets import mnist
 from keras.utils import np_utils
@@ -35,8 +36,13 @@ predictions = Dense(10, activation='softmax')(dense1) #出力層
 
 model = Model(inputs=inputs, outputs=predictions) #モデルの宣言(入力と出力を指定)
 
+# モデルの可視化
+from tensorflow import keras
+
+keras.utils.plot_model(model, 'CNN_with_shape_info.png', show_shapes=True)
+
 model.compile(optimizer="sgd", loss="categorical_crossentropy", metrics=["accuracy"])
-hist = model.fit(X_train, y_train, batch_size=16, verbose=1, epochs=30, validation_split=0.3)
+hist = model.fit(X_train, y_train, batch_size=16, verbose=1, epochs=10, validation_split=0.3) #ほんとはepochs=30
 
 score = model.evaluate(X_test, y_test, verbose=1)
 print("正解率(acc)：", score[1])
