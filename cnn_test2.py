@@ -1,17 +1,9 @@
-import os,re
-import keras
 from keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
-from tensorflow import keras
-from keras.preprocessing.image import ImageDataGenerator
-from keras.preprocessing import image
-from keras import models
+
 from keras.models import Model
 from keras import Input
 from keras.layers import Activation, Conv2D, MaxPooling2D, Flatten, Dense
-from keras.callbacks import TensorBoard, ModelCheckpoint
-import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.model_selection import train_test_split
 
 # 学習データとテストデータを取得する。
