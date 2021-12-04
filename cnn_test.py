@@ -21,10 +21,15 @@ y_test = np_utils.to_categorical(y_test)
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D
 from keras.models import Model
 from keras.layers.core import Flatten
+from tensorflow.keras import initializers
 
 inputs = Input(shape=(28,28,1)) #入力層
 
-conv1 = Conv2D(16, (3, 3), padding='same', activation='relu')(inputs) #畳込み層1
+weight_1 = [[1,1,1],
+            [1,1,1],
+            [1,1,1]]
+
+conv1 = Conv2D(2, (3, 3), padding='same', activation='relu', kernel_initializer=initializers.Constant(value=[weight_1,weight_1]))(inputs) #畳込み層1
 pool1 = MaxPooling2D((2, 2))(conv1)
 conv2 = Conv2D(32, (3, 3), padding='same', activation='relu')(pool1) #畳込み層2
 pool2 = MaxPooling2D((2, 2))(conv2)

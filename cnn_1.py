@@ -7,6 +7,7 @@ from keras.layers import Activation, Conv2D, MaxPooling2D, Flatten, Dense
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split
+from tensorflow.keras import initializers
 
 # 学習データとテストデータを取得する。
 (_x_train_val, _y_train_val), (_x_test, _y_test) = mnist.load_data()
@@ -45,7 +46,15 @@ def model_functional_api():
 
     input = Input(shape=(28, 28, 1))
 
-    x = Conv2D(3, (2,2), padding='same', name='conv1')(input)
+    weight_1 = [[0,0,0],[0,1,0],[1,0,0]]
+    
+    weight_2 = [[0,0,1],[1,1,1],[0,0,1]]
+
+    weight_3 = [[1,0,0],[0,1,0],[0,0,0]]
+
+
+    x = Conv2D(3, (3,3), padding='same', name='conv1', kernel_initializer=initializers.Constant(value=[weight_1, weight_2, weight_3]), trainable=False)(input)
+    #x = Conv2D(3, (2,2), padding='same', name='conv1')(input)
     x = Activation(activation, name='act1')(x)
     x = MaxPooling2D((5,5), name='pool1')(x)
 
@@ -61,6 +70,8 @@ def model_functional_api():
     return model
 
 model = model_functional_api()
+
+model.summary()
 
 """
 # 可視化
@@ -98,22 +109,22 @@ def filter_vi(model):
 
     # 可視化対象レイヤー
     vi_layer.append(model.get_layer('conv1'))
-    #vi_layer.append(model.get_layer('dense4'))
-    #vi_layer.append(model.get_layer('dense6'))
 
     for i in range(len(vi_layer)):
         # レイヤーのフィルタ取得
         target_layer = vi_layer[i].get_weights()[0] #重み
+        print(target_layer)
+        print(target_layer.shape)
         filter_num = target_layer.shape[3]
 
         # ウィンドウ名定義
         fig = plt.gcf()
-        fig.canvas.set_window_title(vi_layer[i].name + " filter visualization")
+        fig.canvas.manager.set_window_title(vi_layer[i].name + " filter visualization")
 
         # 出力
         for j in range(filter_num):
             plt.subplots_adjust(wspace=0.4, hspace=0.8)
-            plt.subplot(filter_num / 6 + 1, 6, j + 1)
+            plt.subplot(int(filter_num / 6 + 1), 6, j + 1)
             plt.xticks([])
             plt.yticks([])
             plt.xlabel(f'filter {j}')
@@ -123,8 +134,8 @@ def filter_vi(model):
 filter_vi(model)
 
 # 重み表示
-#d1 = model.layers[5]
-#print(d1.get_weights())
+d1 = model.layers[5]
+print(d1.get_weights())
 
 d2 = model.layers[7]
 print(d2.get_weights())
