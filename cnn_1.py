@@ -1,9 +1,10 @@
+# 重み指定なし
 import os
 from keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
 from keras.models import Model
 from keras import Input
-from keras.layers import Activation, Conv2D, MaxPooling2D, Flatten, Dense
+from keras.layers import Activation, Conv2D, MaxPooling2D, Flatten, Dense, concatenate
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -42,32 +43,36 @@ y_val = preprocess(_y_val, label=True)
 y_test = preprocess(_y_test, label=True)
 
 def model_functional_api():
-    activation = 'relu'
 
     input = Input(shape=(28, 28, 1))
-
-    weight_1 = [[0,0,0],[0,1,0],[1,0,0]]
     
-    weight_2 = [[0,0,1],[1,1,1],[0,0,1]]
+    # フィルタごとにConv
+    x1 = Conv2D(1, (5,5), padding='same', name='conv1_1', activation='relu')(input)
+    x2 = Conv2D(1, (5,5), padding='same', name='conv1_2', activation='relu')(input)
+    x3 = Conv2D(1, (5,5), padding='same', name='conv1_3', activation='relu')(input)
 
-    weight_3 = [[1,0,0],[0,1,0],[0,0,0]]
+    # フィルタごとにPooling
+    x1 = MaxPooling2D((3,3), name='pool1_1')(x1)
+    x2 = MaxPooling2D((3,3), name='pool1_2')(x2)
+    x3 = MaxPooling2D((3,3), name='pool1_3')(x3)
 
+    x1 = Flatten(name='flatten1_1')(x1)
+    x2 = Flatten(name='flatten1_2')(x2)
+    x3 = Flatten(name='flatten1_3')(x3)   
 
-    x = Conv2D(3, (3,3), padding='same', name='conv1', kernel_initializer=initializers.Constant(value=[weight_1, weight_2, weight_3]), trainable=False)(input)
-    #x = Conv2D(3, (2,2), padding='same', name='conv1')(input)
-    x = Activation(activation, name='act1')(x)
-    x = MaxPooling2D((5,5), name='pool1')(x)
+    x1 = Dense(1, name='dense1_1', activation='relu')(x1) 
+    x2 = Dense(1, name='dense1_2', activation='relu')(x2)
+    x3 = Dense(1, name='dense1_3', activation='relu')(x3)
 
-    x = Flatten(name='flatten')(x)
-    x = Dense(3, name='dense4')(x)
+    # 結合
+    x = concatenate([x1,x2,x3], name='concat')
 
-    x = Activation(activation, name='act4')(x)
-    x = Dense(2, name='dense6')(x)
-    output = Activation('softmax', name='last_act')(x)
+    output = Dense(2, name='dense6', activation='softmax')(x)
 
     model = Model(input, output)
 
     return model
+
 
 model = model_functional_api()
 
@@ -88,14 +93,14 @@ history=model.fit(x_train, y_train, validation_split=0.25, epochs=3, batch_size=
 
 # 中間層の出力
 intermediate_layer_model = Model(inputs=model.input,
-                                 outputs=model.get_layer('act4').output)
+                                 outputs=model.get_layer('concat').output)
 
 intermediate_output = intermediate_layer_model.predict(x_train)
 #Y追加
 intermediate_output=np.insert(intermediate_output, 0, _y_train, axis=1)
 
 import pandas as pd 
-pd.DataFrame(intermediate_output).to_csv('sample3.csv', index=False, header=False)
+pd.DataFrame(intermediate_output).to_csv('sample1.csv', index=False, header=False)
 
 import matplotlib.pyplot as plt
 import os
@@ -108,7 +113,9 @@ def filter_vi(model):
     vi_layer = []
 
     # 可視化対象レイヤー
-    vi_layer.append(model.get_layer('conv1'))
+    vi_layer.append(model.get_layer('conv1_1'))
+    vi_layer.append(model.get_layer('conv1_2'))
+    vi_layer.append(model.get_layer('conv1_3'))
 
     for i in range(len(vi_layer)):
         # レイヤーのフィルタ取得
@@ -132,10 +139,3 @@ def filter_vi(model):
         plt.show()
 
 filter_vi(model)
-
-# 重み表示
-d1 = model.layers[5]
-print(d1.get_weights())
-
-d2 = model.layers[7]
-print(d2.get_weights())

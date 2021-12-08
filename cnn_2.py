@@ -1,3 +1,4 @@
+# 重み指定あり
 import os
 from keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
@@ -42,14 +43,31 @@ y_val = preprocess(_y_val, label=True)
 y_test = preprocess(_y_test, label=True)
 
 def model_functional_api():
-    activation = 'relu'
 
     input = Input(shape=(28, 28, 1))
 
+    weight_1 = [[[[ 0.0]], [[ 0.0]], [[ 0.0]], [[ 0.0]], [[ 0.0]]],
+                [[[ 0.3]], [[ 0.3]], [[ 0.3]], [[ 0.3]], [[ 0.3]]],
+                [[[ 1.0]], [[ 1.0]], [[ 1.0]], [[ 1.0]], [[ 1.0]]],
+                [[[ 0.3]], [[ 0.3]], [[ 0.3]], [[ 0.3]], [[ 0.3]]],
+                [[[ 0.0]], [[ 0.0]], [[ 0.0]], [[ 0.0]], [[ 0.0]]]]
+    
+    weight_2 = [[[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
+                [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
+                [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
+                [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
+                [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]]]
+
+    weight_3 = [[[[ 0.0]], [[ 0.0]], [[ 0.0]], [[ 0.3]], [[ 1.0]]],
+                [[[ 0.0]], [[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]]],
+                [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
+                [[[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]], [[ 0.0]]],
+                [[[ 1.0]], [[ 0.3]], [[ 0.0]], [[ 0.0]], [[ 0.0]]]]
+
     # フィルタごとにConv
-    x1 = Conv2D(1, (5,5), padding='same', name='conv1_1', activation='relu')(input)
-    x2 = Conv2D(1, (5,5), padding='same', name='conv1_2', activation='relu')(input)
-    x3 = Conv2D(1, (5,5), padding='same', name='conv1_3', activation='relu')(input)
+    x1 = Conv2D(1, (5,5), padding='same', name='conv1_1', kernel_initializer=initializers.Constant(value=weight_1), activation='relu')(input)
+    x2 = Conv2D(1, (5,5), padding='same', name='conv1_2', kernel_initializer=initializers.Constant(value=weight_2), activation='relu')(input)
+    x3 = Conv2D(1, (5,5), padding='same', name='conv1_3', kernel_initializer=initializers.Constant(value=weight_3), activation='relu')(input)
 
     # フィルタごとにPooling
     x1 = MaxPooling2D((3,3), name='pool1_1')(x1)
@@ -98,7 +116,7 @@ intermediate_output = intermediate_layer_model.predict(x_train)
 intermediate_output=np.insert(intermediate_output, 0, _y_train, axis=1)
 
 import pandas as pd 
-pd.DataFrame(intermediate_output).to_csv('sample3.csv', index=False, header=False)
+pd.DataFrame(intermediate_output).to_csv('sample2.csv', index=False, header=False)
 
 import matplotlib.pyplot as plt
 import os
@@ -118,8 +136,6 @@ def filter_vi(model):
     for i in range(len(vi_layer)):
         # レイヤーのフィルタ取得
         target_layer = vi_layer[i].get_weights()[0] #重み
-        print(target_layer)
-        print(target_layer.shape)
         filter_num = target_layer.shape[3]
 
         # ウィンドウ名定義

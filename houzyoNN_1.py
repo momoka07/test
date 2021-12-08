@@ -49,7 +49,7 @@ model.compile(loss='mse',
             metrics=['mae', 'mse'])
 
 history=model.fit([train_data['x1'],train_data['x2'],train_data['x3']], 
-                    train_labels, validation_split=0.25, epochs=200, batch_size=16, verbose=1)
+                    train_labels, validation_split=0.25, epochs=200, batch_size=16, verbose=0)
 
 # 目的変数を予測
 Y_train_pred = model.predict([train_data['x1'],train_data['x2'],train_data['x3']])
