@@ -65,9 +65,12 @@ def model_functional_api():
                 [[[ 1.0]], [[ 0.3]], [[ 0.0]], [[ 0.0]], [[ 0.0]]]]
 
     # フィルタごとにConv
-    x1 = Conv2D(1, (5,5), padding='same', name='conv1_1', kernel_initializer=initializers.Constant(value=weight_1), activation='relu')(input)
-    x2 = Conv2D(1, (5,5), padding='same', name='conv1_2', kernel_initializer=initializers.Constant(value=weight_2), activation='relu')(input)
-    x3 = Conv2D(1, (5,5), padding='same', name='conv1_3', kernel_initializer=initializers.Constant(value=weight_3), activation='relu')(input)
+    x1 = Conv2D(1, (5,5), padding='same', name='conv1_1', trainable=False, 
+                kernel_initializer=initializers.Constant(value=weight_1), activation='relu')(input)
+    x2 = Conv2D(1, (5,5), padding='same', name='conv1_2', trainable=False,
+                kernel_initializer=initializers.Constant(value=weight_2), activation='relu')(input)
+    x3 = Conv2D(1, (5,5), padding='same', name='conv1_3', trainable=False,
+                kernel_initializer=initializers.Constant(value=weight_3), activation='relu')(input)
 
     # フィルタごとにPooling
     x1 = MaxPooling2D((3,3), name='pool1_1')(x1)
@@ -93,12 +96,13 @@ def model_functional_api():
 
 model = model_functional_api()
 
-"""
 # 可視化
-model.summary()
 from tensorflow import keras
 keras.utils.plot_model(model, 'my_model_with_shape_info.png', show_shapes=True)
-"""
+
+
+
+model.summary()
 
 model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',
