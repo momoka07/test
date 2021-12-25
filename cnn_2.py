@@ -57,12 +57,18 @@ def model_functional_api():
                 [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
                 [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
                 [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]]]
-
+                
     weight_3 = [[[[ 0.0]], [[ 0.0]], [[ 0.0]], [[ 0.3]], [[ 1.0]]],
                 [[[ 0.0]], [[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]]],
                 [[[ 0.0]], [[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]]],
                 [[[ 0.3]], [[ 1.0]], [[ 0.3]], [[ 0.0]], [[ 0.0]]],
                 [[[ 1.0]], [[ 0.3]], [[ 0.0]], [[ 0.0]], [[ 0.0]]]]
+
+    weight_4 = [[[[ 0.0]], [[ 0.0]], [[ 1.0]], [[ 0.0]], [[ 0.0]]],
+                [[[ 0.0]], [[ 0.0]], [[ 1.0]], [[ 0.0]], [[ 0.0]]],
+                [[[ 1.0]], [[ 1.0]], [[ 1.0]], [[ 1.0]], [[ 1.0]]],
+                [[[ 0.0]], [[ 0.0]], [[ 1.0]], [[ 0.0]], [[ 0.0]]],
+                [[[ 0.0]], [[ 0.0]], [[ 1.0]], [[ 0.0]], [[ 0.0]]]]
 
     # フィルタごとにConv
     x1 = Conv2D(1, (5,5), padding='same', name='conv1_1', trainable=False, 
@@ -70,7 +76,7 @@ def model_functional_api():
     x2 = Conv2D(1, (5,5), padding='same', name='conv1_2', trainable=False,
                 kernel_initializer=initializers.Constant(value=weight_2), activation='relu')(input)
     x3 = Conv2D(1, (5,5), padding='same', name='conv1_3', trainable=False,
-                kernel_initializer=initializers.Constant(value=weight_3), activation='relu')(input)
+                kernel_initializer=initializers.Constant(value=weight_4), activation='relu')(input)
 
     # フィルタごとにPooling
     x1 = MaxPooling2D((3,3), name='pool1_1')(x1)
@@ -148,8 +154,7 @@ def filter_vi(model):
 
         # 出力
         for j in range(filter_num):
-            plt.subplots_adjust(wspace=0.4, hspace=0.8)
-            plt.subplot(int(filter_num / 6 + 1), 6, j + 1)
+            #plt.subplot(int(filter_num / 6 + 1), 6, j + 1)
             plt.xticks([])
             plt.yticks([])
             plt.xlabel(f'filter {j}')

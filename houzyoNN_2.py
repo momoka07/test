@@ -57,7 +57,7 @@ multiply4 = Multiply()([hidden1_1,hidden1_2,hidden1_3])
 hidden2_m = concatenate([hidden1_1, hidden1_2, hidden1_3, multiply1, multiply2, multiply3, multiply4])
 
 # 出力
-predictions = Dense(1,name='Output',kernel_initializer=initializers.TruncatedNormal(mean=1.0, stddev=0.05, seed=None),
+predictions = Dense(1,name='Output',kernel_initializer=initializers.Ones(),
                          activation='relu')(hidden2_m)
 
 # kernel_regularizer=keras.regularizers.l2(0.1), kernel_initializer=initializers.Zeros(),initializers.TruncatedNormal(mean=1.0, stddev=0.05, seed=None),

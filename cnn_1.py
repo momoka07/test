@@ -76,7 +76,7 @@ def model_functional_api():
 
 model = model_functional_api()
 
-model.summary()
+#model.summary()
 
 """
 # 可視化
@@ -89,7 +89,7 @@ model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',
               metrics=['acc'])
 
-history=model.fit(x_train, y_train, validation_split=0.25, epochs=3, batch_size=128, verbose=1)
+history=model.fit(x_train, y_train, validation_split=0.25, epochs=50, batch_size=128, verbose=1)
 
 # 中間層の出力
 intermediate_layer_model = Model(inputs=model.input,
@@ -120,8 +120,8 @@ def filter_vi(model):
     for i in range(len(vi_layer)):
         # レイヤーのフィルタ取得
         target_layer = vi_layer[i].get_weights()[0] #重み
-        print(target_layer)
-        print(target_layer.shape)
+        #print(target_layer)
+        #print(target_layer.shape)
         filter_num = target_layer.shape[3]
 
         # ウィンドウ名定義
@@ -130,8 +130,8 @@ def filter_vi(model):
 
         # 出力
         for j in range(filter_num):
-            plt.subplots_adjust(wspace=0.4, hspace=0.8)
-            plt.subplot(int(filter_num / 6 + 1), 6, j + 1)
+            #plt.subplots_adjust(wspace=0.4, hspace=0.8)
+            #plt.subplot(int(filter_num / 6 + 1), 6, j + 1)
             plt.xticks([])
             plt.yticks([])
             plt.xlabel(f'filter {j}')
